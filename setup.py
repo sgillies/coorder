@@ -11,7 +11,7 @@ setup(name='coorder',
       long_description="""\
 The ordering of geospatial coordinates varies depending on the coordinate system used. Coörder is here to help!""",
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      keywords='gis coordinates unfuddling',
+      keywords='gis georss gml geojson ogc coordinates unfuddling',
       author='Sean Gillies',
       author_email='sean.gillies@gmail.com',
       url='http://github.com/sgillies/coorder',

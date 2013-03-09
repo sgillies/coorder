@@ -2,22 +2,46 @@
 #
 # coorder.py
 #
-# Based on code in feedparser.py by Sean Gillies.
-# 
-# The ordering of geospatial coordinates varies depending on the coordinate
-# system used. Coörder is here to help!
+# Based on code in feedparser by Sean Gillies.
+
+"""
+The ordering of geospatial coordinates varies depending on the
+coordinate system used. Coörder is here to help!
+"""
 
 def is_latlng(crs):
-    """Returns `True` if the crs is strictly lat-lng, else `False`.
+    """Returns `True` if the crs is strictly latitude-longitude
+    coordinate order, else `False`.
 
-    The `crs` object may be a "epsg:nnnn" string, an OGC URN (as a
-    string), or a Proj.4 definition in dict form (ala pyproj).
+    The `crs` object may be an integer EPSG code, an "epsg:nnnn"
+    string, an OGC URN (as a string), or a Proj.4 definition in dict
+    form (ala pyproj and fiona).
+
+    If `crs` is None, `False` is returned.
+
+    The WKT format is not currently supported.
+
+    Examples:
+
+    >>> print is_latlng('urn:ogc:def:crs:EPSG::4326')
+    True
+    >>> print is_latlng('urn:ogc:def:crs:OGC:1.3:CRS84')
+    False
+
     """
-    if type(crs) == type('string'):
+
+    if crs is None:
+        return False
+    elif isinstance(crs, int):
+        return bool(crs in _geogCS)
+    elif type(crs) == type('string'):
         val = crs.lower()
         if 'epsg' in val:
             epsg = int(val.split(":")[-1])
             return bool(epsg in _geogCS)
+        elif 'urn:ogc:def:crs:ogc:1.3' in val:
+            # The longitude-latitude CRS defined in OGC 07-092r1
+            return False
         else:
             raise ValueError("%s is not valid crs input", crs)
     elif crs.has_key('init'):
@@ -29,6 +53,7 @@ def is_latlng(crs):
             raise ValueError("%s is not valid crs input", crs)
     else:
         raise ValueError("%s is not valid crs input", crs)
+
 
 # The list of EPSG codes for geographic (latitude/longitude) coordinate
 # systems to support decoding of GeoRSS GML profiles.
